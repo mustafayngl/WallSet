@@ -1,30 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:background="#000000"
-    android:orientation="vertical">
+    android:background="#000000">
 
-    <!-- Fullscreen Image -->
+    <!-- Fullscreen Image as Background -->
     <ImageView
         android:id="@+id/fullscreenImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter" />
+        android:scaleType="centerCrop" />
 
-    <!-- Boşluk bırakarak butonu alt kısma itiyoruz -->
-    <Space
+    <!-- Button Container for horizontal alignment -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:layout_weight="1" />
-
-    <!-- Favoriye Ekle Butonu -->
-    <Button
-        android:id="@+id/addToFavoritesButton"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:text="Favoriye Ekle" />
-</LinearLayout>
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:padding="16dp">
+
+        <!-- Favoriye Ekle Butonu -->
+        <Button
+            android:id="@+id/addToFavoritesButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Favoriye Ekle"
+            android:textSize="16sp"
+            android:backgroundTint="#FF4081"
+            android:textColor="#FFFFFF"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp" />
+
+        <!-- Duvar Kağıdı Yap Butonu -->
+        <Button
+            android:id="@+id/btnSetWallpaper"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Duvar Kağıdı Yap"
+            android:textSize="16sp"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF"
+            android:padding="12dp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+</FrameLayout>

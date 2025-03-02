@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WallSet</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="button">Button</string>
+</resources>

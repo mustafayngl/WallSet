@@ -10,4 +10,9 @@ public interface ApiService {
     @Headers("Authorization: LPcBoWFrVxShADqVr0InFqciuoIBQ1xrZdDT5ICiTgTdBEHhqu0mmeNy") // Pexels API key'inizi buraya ekleyin
     @GET("v1/curated")
     Call<WallpaperResponse> getWallpapers(@Query("page") int page, @Query("per_page") int perPage);
+
+    // Arama fonksiyonu ekliyoruz
+    @Headers("Authorization: LPcBoWFrVxShADqVr0InFqciuoIBQ1xrZdDT5ICiTgTdBEHhqu0mmeNy")
+    @GET("v1/search")
+    Call<WallpaperResponse> searchWallpapers(@Query("query") String query, @Query("page") int page, @Query("per_page") int perPage);
 }

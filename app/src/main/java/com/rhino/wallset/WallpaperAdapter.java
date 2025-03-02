@@ -50,7 +50,6 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
         // Favorilere ekle/çıkart butonu işlemi
         boolean isFavorite = sharedPreferencesHelper.isFavorite(wallpaper.getUrl()); // Resim favorilere eklenmiş mi?
 
-        // MainActivity'de favoriye ekle butonu görünmeli, Favoriler sayfasında favorilerden çıkar butonu görünmeli
         if (context instanceof MainActivity) {
             holder.favoriteButton.setVisibility(View.VISIBLE); // "Favoriye Ekle" butonu görünsün
             holder.removeButton.setVisibility(View.GONE); // "Favorilerden Çıkar" butonu gizlensin
@@ -91,8 +90,8 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
         public WallpaperViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.wallpaperImageView);
-            favoriteButton = itemView.findViewById(R.id.favoriteButton); // Butonun id'si
-            removeButton = itemView.findViewById(R.id.removeFromFavoritesButton); // Butonun id'si
+            favoriteButton = itemView.findViewById(R.id.favoriteButton);
+            removeButton = itemView.findViewById(R.id.removeFromFavoritesButton);
         }
     }
 

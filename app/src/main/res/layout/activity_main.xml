@@ -5,29 +5,25 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Ana ekran arka plan resmi -->
-    <ImageView
-        android:id="@+id/wallpaperImageView"
+    <!-- Toolbar ekliyoruz -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/placeholder"
-        android:contentDescription="@string/wallpaper"
-        android:scaleType="centerCrop" />
+        android:layout_height="56dp"
+        android:background="?attr/colorPrimary"
+        android:title="Duvar Kağıtları"
+        android:titleTextColor="@android:color/white"
+        android:elevation="4dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_alignParentTop="true" />
 
     <!-- Duvar kağıtlarını gösteren RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:layout_below="@id/toolbar"/>
 
-    <!-- Favorilere gitmek için buton -->
-    <Button
-        android:id="@+id/favoritesButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Favoriler"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp" />
 </RelativeLayout>

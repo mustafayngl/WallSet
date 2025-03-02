@@ -2,14 +2,15 @@ package com.rhino.wallset;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 
 import java.util.List;
@@ -28,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Toolbar'ı ayarlıyoruz
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar); // Toolbar'ı ActionBar olarak set ediyoruz
+
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 sütunlu grid
 
@@ -39,22 +44,9 @@ public class MainActivity extends AppCompatActivity {
         Call<WallpaperResponse> call = apiService.getWallpapers(1, 10); // Sayfa 1 ve 10 duvar kağıdı isteği
         call.enqueue(new Callback<WallpaperResponse>() {
             @Override
-            public void onResponse(@NonNull Call<WallpaperResponse> call, @NonNull Response<WallpaperResponse> response) {
+            public void onResponse(Call<WallpaperResponse> call, Response<WallpaperResponse> response) {
                 if (response.body() != null && response.body().getPhotos() != null) {
-                    // API cevabını loglayalım
-                    Log.d("Wallpapers", "API'den gelen cevap: " + response.body().toString());
-
                     List<Wallpaper> wallpapers = response.body().getPhotos();
-
-                    // Duvar kağıtlarının sayısını log'la yazdıralım
-                    Log.d("Wallpapers", "Duvar Kağıtları: " + wallpapers.size());
-
-                    // Eğer veriler boşsa, bir log mesajı ekleyelim
-                    if (wallpapers.isEmpty()) {
-                        Log.d("Wallpapers", "Photos listesi boş.");
-                        Toast.makeText(MainActivity.this, "Hiç duvar kağıdı bulunamadı!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
 
                     // RecyclerView Adapter'ini ayarla
                     wallpaperAdapter = new WallpaperAdapter(MainActivity.this, wallpapers,
@@ -75,26 +67,41 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
                     // API başarısızsa hata mesajı göster
-                    Log.e("Wallpapers", "API Hatası: " + response.code() + " - " + response.message());
                     Toast.makeText(MainActivity.this, "API Hatası", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<WallpaperResponse> call, @NonNull Throwable t) {
+            public void onFailure(Call<WallpaperResponse> call, Throwable t) {
                 // Bağlantı hatası durumunda log ekleyelim
-                Log.e("Wallpapers", "Bağlantı Hatası: " + t.getMessage());
-                t.printStackTrace(); // Daha ayrıntılı hata bilgisi için stack trace ekleyelim
                 Toast.makeText(MainActivity.this, "Bağlantı Hatası", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-        // Favoriler butonunu ekleyelim
-        Button favoritesButton = findViewById(R.id.favoritesButton);
-        favoritesButton.setOnClickListener(v -> {
-            // Favoriler ekranına geçiş yapalım
-            Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
-            startActivity(intent);
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Menü öğelerini ekle
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Menü öğeleri için tıklama işlemi
+        switch (item.getItemId()) {
+            case R.id.action_favorites:
+                // Favoriler butonuna tıklanmış
+                Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_refresh:
+                // Yenile butonuna tıklanmış
+                Toast.makeText(this, "Yeniliyor...", Toast.LENGTH_SHORT).show();
+                // Yenileme işlemi yapılacak
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

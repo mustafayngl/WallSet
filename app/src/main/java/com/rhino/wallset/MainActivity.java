@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,17 +38,28 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 sütunlu grid
 
+        loadWallpapers(); // Uygulama açıldığında duvar kağıtlarını yükleyelim
+    }
+
+    private void loadWallpapers() {
+        // Rastgele bir sayfa numarası oluşturuyoruz
+        Random random = new Random();
+        int page = random.nextInt(100) + 1; // 1-100 arasında rastgele bir sayfa numarası
+
         // Retrofit ile API'ye bağlanalım
         Retrofit retrofit = RetrofitClient.getRetrofitInstance();
         ApiService apiService = retrofit.create(ApiService.class);
 
         // API'yi çağırıyoruz
-        Call<WallpaperResponse> call = apiService.getWallpapers(1, 10); // Sayfa 1 ve 10 duvar kağıdı isteği
+        Call<WallpaperResponse> call = apiService.getWallpapers(page, 10); // Rastgele sayfa numarasıyla duvar kağıdı isteği
         call.enqueue(new Callback<WallpaperResponse>() {
             @Override
             public void onResponse(Call<WallpaperResponse> call, Response<WallpaperResponse> response) {
                 if (response.body() != null && response.body().getPhotos() != null) {
                     List<Wallpaper> wallpapers = response.body().getPhotos();
+
+                    // Resimleri rastgele sıralıyoruz
+                    Collections.shuffle(wallpapers);
 
                     // RecyclerView Adapter'ini ayarla
                     wallpaperAdapter = new WallpaperAdapter(MainActivity.this, wallpapers,
@@ -97,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_refresh:
                 // Yenile butonuna tıklanmış
-                Toast.makeText(this, "Yeniliyor...", Toast.LENGTH_SHORT).show();
-                // Yenileme işlemi yapılacak
+                Toast.makeText(this, "Yenileniyor...", Toast.LENGTH_SHORT).show();
+                loadWallpapers(); // Yeni bir rastgele sayfa talep ediyoruz
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

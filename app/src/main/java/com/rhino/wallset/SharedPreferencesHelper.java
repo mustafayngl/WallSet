@@ -18,33 +18,40 @@ public class SharedPreferencesHelper {
 
     // Favoriye eklenen duvar kağıdını sakla
     public void addToFavorites(String imageUrl) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> favorites = sharedPreferences.getStringSet(FAVORITES_KEY, new HashSet<>());
+        Set<String> favorites = new HashSet<>(sharedPreferences.getStringSet(FAVORITES_KEY, new HashSet<>()));
 
-        favorites.add(imageUrl); // URL'yi favorilere ekle
-        editor.putStringSet(FAVORITES_KEY, favorites);
-        editor.apply();
+        if (!favorites.contains(imageUrl)) { // Eğer zaten favoride değilse ekle
+            favorites.add(imageUrl);
+            saveFavorites(favorites);
+        }
     }
 
     // Favorilerden duvar kağıdını çıkar
     public void removeFromFavorites(String imageUrl) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> favorites = sharedPreferences.getStringSet(FAVORITES_KEY, new HashSet<>());
+        Set<String> favorites = new HashSet<>(sharedPreferences.getStringSet(FAVORITES_KEY, new HashSet<>()));
 
-        favorites.remove(imageUrl); // URL'yi favorilerden çıkar
-        editor.putStringSet(FAVORITES_KEY, favorites);
-        editor.apply();
+        if (favorites.contains(imageUrl)) {
+            favorites.remove(imageUrl);
+            saveFavorites(favorites);
+        }
     }
 
     // Resmin favorilere eklenip eklenmediğini kontrol et
     public boolean isFavorite(String imageUrl) {
         Set<String> favorites = sharedPreferences.getStringSet(FAVORITES_KEY, new HashSet<>());
-        return favorites.contains(imageUrl); // URL favorilerde varsa true döndür
+        return favorites.contains(imageUrl);
     }
 
-    // Favorilere eklenen duvar kağıtlarını al
+    // Favorilere eklenen duvar kağıtlarını al (String[] formatında)
     public String[] getFavorites() {
         Set<String> favorites = sharedPreferences.getStringSet(FAVORITES_KEY, new HashSet<>());
-        return favorites.toArray(new String[0]);
+        return favorites.toArray(new String[0]); // List yerine String[] döndür
+    }
+
+    // Favori listesini güvenli şekilde SharedPreferences'e kaydet
+    private void saveFavorites(Set<String> favorites) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putStringSet(FAVORITES_KEY, new HashSet<>(favorites)); // Yeni Set oluşturup kaydet
+        editor.apply();
     }
 }

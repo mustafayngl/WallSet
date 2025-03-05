@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 
@@ -23,6 +25,9 @@ import java.util.Set;
 public class FullscreenActivity extends AppCompatActivity {
     private Button addToFavoritesButton, btnSetWallpaper;
     private String wallpaperUrl;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,49 +35,60 @@ public class FullscreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fullscreen);
 
         // Toolbar'ı gizle
-        getSupportActionBar().hide();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
         // Görseli görüntüle
-        ImageView imageView = findViewById(R.id.fullscreenImageView);
+        imageView = findViewById(R.id.fullscreenImageView);
         wallpaperUrl = getIntent().getStringExtra("IMAGE_URL");
 
-        // Glide ile duvar kağıdını yükle
         Glide.with(this)
                 .load(wallpaperUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // Önceden yüklenmiş resimleri önbellekte tut
+                .thumbnail(0.1f) // Önce düşük çözünürlüklü göster
+                .priority(Priority.HIGH) // Öncelikli yükleme
+                .override(800, 600) // Büyük resimleri sıkıştırarak yükle
                 .into(imageView);
 
         // SharedPreferences nesnesini oluştur
-        SharedPreferences sharedPreferences = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        sharedPreferences = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
-        // Favoriye ekleme butonunu bul
+        // Butonları bul
         addToFavoritesButton = findViewById(R.id.addToFavoritesButton);
-        // Duvar kağıdı yapma butonunu bul
         btnSetWallpaper = findViewById(R.id.btnSetWallpaper);
 
-        // Favoriye ekleme işlemi
-        addToFavoritesButton.setOnClickListener(v -> {
-            Set<String> favoritesSet = sharedPreferences.getStringSet("favorites", new HashSet<>());
-            if (favoritesSet.contains(wallpaperUrl)) {
-                Toast.makeText(FullscreenActivity.this, "Bu duvar kağıdı zaten favorilerde!", Toast.LENGTH_SHORT).show();
-            } else {
-                favoritesSet.add(wallpaperUrl);  // Favoriye ekle
-                editor.putStringSet("favorites", favoritesSet);
-                editor.apply();  // Değişiklikleri kaydet
-                Toast.makeText(FullscreenActivity.this, "Duvar kağıdı favorilere eklendi!", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Favori ekleme işlemi
+        addToFavoritesButton.setOnClickListener(v -> new Thread(() -> addToFavorites()).start());
 
         // Duvar kağıdı olarak ayarlama işlemi
         btnSetWallpaper.setOnClickListener(v -> setWallpaper());
     }
 
+    // Favori ekleme işlemi (arka planda çalışıyor)
+    private void addToFavorites() {
+        Set<String> favoritesSet = sharedPreferences.getStringSet("favorites", new HashSet<>());
+        Set<String> updatedFavorites = new HashSet<>(favoritesSet); // Mutable kopya oluştur
+
+        if (updatedFavorites.contains(wallpaperUrl)) {
+            runOnUiThread(() -> Toast.makeText(FullscreenActivity.this, "Bu duvar kağıdı zaten favorilerde!", Toast.LENGTH_SHORT).show());
+        } else {
+            updatedFavorites.add(wallpaperUrl);
+            editor.putStringSet("favorites", updatedFavorites);
+            editor.apply();
+            runOnUiThread(() -> Toast.makeText(FullscreenActivity.this, "Duvar kağıdı favorilere eklendi!", Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    // Duvar kağıdını ayarlama işlemi
     private void setWallpaper() {
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
 
         Glide.with(this)
                 .asBitmap()
                 .load(wallpaperUrl)
+                .diskCacheStrategy(DiskCacheStrategy.DATA) // Hafıza optimizasyonu
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
@@ -88,5 +104,11 @@ public class FullscreenActivity extends AppCompatActivity {
                     public void onLoadCleared(@Nullable Drawable placeholder) {
                     }
                 });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Glide.with(this).clear(imageView); // Daha güvenli
     }
 }

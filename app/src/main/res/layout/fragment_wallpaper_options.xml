@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/previewImageView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop" />
+
+    <Button
+        android:id="@+id/btnHomeScreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ana ekran için ayarla"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/btnLockScreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kilit ekranı için ayarla"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/btnBoth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Her ikisi için de ayarla"
+        android:layout_marginTop="10dp"/>
+</LinearLayout>

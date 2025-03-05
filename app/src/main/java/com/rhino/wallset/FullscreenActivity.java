@@ -9,8 +9,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
@@ -59,51 +59,50 @@ public class FullscreenActivity extends AppCompatActivity {
         addToFavoritesButton = findViewById(R.id.addToFavoritesButton);
         btnSetWallpaper = findViewById(R.id.btnSetWallpaper);
 
-        // Favori ekleme işlemi
-        addToFavoritesButton.setOnClickListener(v -> new Thread(() -> addToFavorites()).start());
+        // Favori durumu kontrol et ve butonu ona göre ayarla
+        updateFavoriteButton();
 
-        // Duvar kağıdı olarak ayarlama işlemi
-        btnSetWallpaper.setOnClickListener(v -> setWallpaper());
+        // Favori ekleme işlemi
+        addToFavoritesButton.setOnClickListener(v -> new Thread(() -> toggleFavorite()).start());
+
+        // Duvar kağıdını ayarlama işlemi
+        btnSetWallpaper.setOnClickListener(v -> showSetWallpaperDialog());
     }
 
-    // Favori ekleme işlemi (arka planda çalışıyor)
-    private void addToFavorites() {
+    // Favori durumu kontrol et ve butonu güncelle
+    private void updateFavoriteButton() {
+        Set<String> favoritesSet = sharedPreferences.getStringSet("favorites", new HashSet<>());
+        if (favoritesSet.contains(wallpaperUrl)) {
+            addToFavoritesButton.setText("Favorilerden Çıkar");
+        } else {
+            addToFavoritesButton.setText("Favorilere Ekle");
+        }
+    }
+
+    // Favoriye ekleme/çıkarma işlemi
+    private void toggleFavorite() {
         Set<String> favoritesSet = sharedPreferences.getStringSet("favorites", new HashSet<>());
         Set<String> updatedFavorites = new HashSet<>(favoritesSet); // Mutable kopya oluştur
 
         if (updatedFavorites.contains(wallpaperUrl)) {
-            runOnUiThread(() -> Toast.makeText(FullscreenActivity.this, "Bu duvar kağıdı zaten favorilerde!", Toast.LENGTH_SHORT).show());
+            updatedFavorites.remove(wallpaperUrl); // Favorilerden çıkar
+            runOnUiThread(() -> Toast.makeText(FullscreenActivity.this, "Duvar kağıdı favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show());
         } else {
-            updatedFavorites.add(wallpaperUrl);
-            editor.putStringSet("favorites", updatedFavorites);
-            editor.apply();
+            updatedFavorites.add(wallpaperUrl); // Favorilere ekle
             runOnUiThread(() -> Toast.makeText(FullscreenActivity.this, "Duvar kağıdı favorilere eklendi!", Toast.LENGTH_SHORT).show());
         }
+
+        editor.putStringSet("favorites", updatedFavorites);
+        editor.apply();
+
+        runOnUiThread(this::updateFavoriteButton); // Butonu güncelle
     }
 
-    // Duvar kağıdını ayarlama işlemi
-    private void setWallpaper() {
-        WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
-
-        Glide.with(this)
-                .asBitmap()
-                .load(wallpaperUrl)
-                .diskCacheStrategy(DiskCacheStrategy.DATA) // Hafıza optimizasyonu
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                        try {
-                            wallpaperManager.setBitmap(resource);
-                            Toast.makeText(FullscreenActivity.this, "Duvar kağıdı ayarlandı!", Toast.LENGTH_SHORT).show();
-                        } catch (IOException e) {
-                            Toast.makeText(FullscreenActivity.this, "Hata: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                    }
-                });
+    // Duvar kağıdını ayarlamak için seçenekleri gösteren BottomSheetDialogFragment
+    private void showSetWallpaperDialog() {
+        WallpaperOptionFragment fragment = WallpaperOptionFragment.newInstance(wallpaperUrl);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        fragment.show(transaction, "WallpaperOptionFragment");
     }
 
     @Override

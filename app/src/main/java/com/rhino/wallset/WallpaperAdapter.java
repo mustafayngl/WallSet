@@ -53,18 +53,25 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
         if (context instanceof MainActivity) {
             holder.favoriteButton.setVisibility(View.VISIBLE); // "Favoriye Ekle" butonu görünsün
             holder.removeButton.setVisibility(View.GONE); // "Favorilerden Çıkar" butonu gizlensin
+
+            // Update the button text based on whether the wallpaper is a favorite
             holder.favoriteButton.setText(isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle");
 
             holder.favoriteButton.setOnClickListener(v -> {
                 if (isFavorite) {
+                    // Remove from favorites
                     sharedPreferencesHelper.removeFromFavorites(wallpaper.getUrl());
-                    holder.favoriteButton.setText("Favorilere Ekle");
+                    holder.favoriteButton.setText("Favorilere Ekle"); // Update UI immediately
                     Toast.makeText(context, "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show();
                 } else {
+                    // Add to favorites
                     sharedPreferencesHelper.addToFavorites(wallpaper.getUrl());
-                    holder.favoriteButton.setText("Favorilerden Çıkar");
+                    holder.favoriteButton.setText("Favorilerden Çıkar"); // Update UI immediately
                     Toast.makeText(context, "Favorilere eklendi!", Toast.LENGTH_SHORT).show();
                 }
+
+                // Notify the adapter to update the list
+                notifyItemChanged(position); // This will force the UI to refresh for this particular item
             });
         } else if (context instanceof FavoritesActivity) {
             holder.favoriteButton.setVisibility(View.GONE); // "Favoriye Ekle" butonu gizlensin

@@ -40,6 +40,7 @@ dependencies {
     // Retrofit for API requests
     implementation libs.retrofit
     implementation libs.converter.gson
+    implementation libs.fragment // Versiyonu güncelleyebilirsiniz.
 
     // Glide for image loading
     implementation libs.glide

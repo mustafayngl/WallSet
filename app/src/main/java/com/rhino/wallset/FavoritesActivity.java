@@ -51,7 +51,7 @@ public class FavoritesActivity extends AppCompatActivity {
                             wallpaper -> removeFavorite(wallpaper));
                     favoritesRecyclerView.setAdapter(adapter);
                 } else {
-                    Toast.makeText(FavoritesActivity.this, "Favori duvar kağıdınız yok!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FavoritesActivity.this, getString(R.string.no_favorites), Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -66,7 +66,7 @@ public class FavoritesActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 adapter.notifyDataSetChanged();
                 if (wallpaperList.isEmpty()) {
-                    Toast.makeText(FavoritesActivity.this, "Tüm favoriler silindi!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FavoritesActivity.this, getString(R.string.all_favorites_removed), Toast.LENGTH_SHORT).show();
                 }
             });
         });

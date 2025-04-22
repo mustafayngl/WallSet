@@ -62,7 +62,6 @@ public class Wallpaper {
             return small;
         }
 
-        // Setter metotları (isteğe bağlı olarak ekleyebilirsin)
         public void setOriginal(String original) {
             this.original = original;
         }

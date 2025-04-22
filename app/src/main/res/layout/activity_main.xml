@@ -5,27 +5,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Toolbar ekliyoruz -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="?attr/colorPrimary"
-        android:title="Duvar Kağıtları"
-        android:titleTextColor="@android:color/white"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/toolbar_background"
+        android:title="@string/wallpapers_title"
+        android:titleTextColor="@color/white"
         android:elevation="4dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="@dimen/toolbar_padding_start"
+        android:paddingEnd="@dimen/toolbar_padding_end"
         android:layout_alignParentTop="true" />
 
-    <!-- Duvar kağıtlarını gösteren RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
+        android:padding="@dimen/recycler_padding"
         android:layout_below="@id/toolbar"/>
-
-
-
 </RelativeLayout>

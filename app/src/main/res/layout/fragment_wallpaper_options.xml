@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/layout_padding">
 
     <ImageView
         android:id="@+id/previewImageView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="@dimen/imageview_height"
         android:layout_gravity="center"
         android:scaleType="centerCrop" />
 
@@ -16,27 +16,27 @@
         android:id="@+id/btnHomeScreen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ana ekran için ayarla"
-        android:layout_marginTop="10dp"/>
+        android:text="@string/set_home_screen"
+        android:layout_marginTop="@dimen/button_margin_top"/>
 
     <Button
         android:id="@+id/btnLockScreen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Kilit ekranı için ayarla"
-        android:layout_marginTop="10dp"/>
+        android:text="@string/set_lock_screen"
+        android:layout_marginTop="@dimen/button_margin_top"/>
 
     <Button
         android:id="@+id/btnBoth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Her ikisi için de ayarla"
-        android:layout_marginTop="10dp"/>
+        android:text="@string/set_both"
+        android:layout_marginTop="@dimen/button_margin_top"/>
 
     <Button
         android:id="@+id/btnFavorite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Favorilere Ekle" />
+        android:layout_marginTop="@dimen/button_margin_top"
+        android:text="@string/add_to_favorites" />
 </LinearLayout>

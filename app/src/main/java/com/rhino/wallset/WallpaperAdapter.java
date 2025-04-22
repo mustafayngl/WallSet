@@ -53,17 +53,17 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
             holder.favoriteButton.setVisibility(View.VISIBLE); // "Favoriye Ekle" button visible
             holder.removeButton.setVisibility(View.GONE); // "Favorilerden Çıkar" button hidden
 
-            holder.favoriteButton.setText(isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle");
+            holder.favoriteButton.setText(isFavorite ? context.getString(R.string.remove_from_favorites) : context.getString(R.string.add_to_favorites));
 
             holder.favoriteButton.setOnClickListener(v -> {
                 if (isFavorite) {
                     dbHelper.removeFromFavorites(wallpaper.getUrl());
-                    holder.favoriteButton.setText("Favorilere Ekle"); // Update UI immediately
-                    Toast.makeText(context, "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show();
+                    holder.favoriteButton.setText(context.getString(R.string.add_to_favorites)); // Update UI immediately
+                    Toast.makeText(context, context.getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
                 } else {
                     dbHelper.addToFavorites(wallpaper); // Adding Wallpaper object directly
-                    holder.favoriteButton.setText("Favorilerden Çıkar"); // Update UI immediately
-                    Toast.makeText(context, "Favorilere eklendi!", Toast.LENGTH_SHORT).show();
+                    holder.favoriteButton.setText(context.getString(R.string.remove_from_favorites)); // Update UI immediately
+                    Toast.makeText(context, context.getString(R.string.added_to_favorites), Toast.LENGTH_SHORT).show();
                 }
 
                 // Notify the adapter to update the list
@@ -71,11 +71,11 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
             });
         } else if (context instanceof FavoritesActivity) {
             holder.favoriteButton.setVisibility(View.GONE); // "Favoriye Ekle" button hidden
-            holder.removeButton.setVisibility(View.VISIBLE); // "Favorilerden Çıkar" button visible
+            holder.removeButton.setVisibility(View.VISIBLE); // "Favorilerden çıkar" button visible
 
             holder.removeButton.setOnClickListener(v -> {
                 removeListener.onRemoveClick(wallpaper);
-                Toast.makeText(context, "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
             });
         }
     }

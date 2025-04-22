@@ -34,21 +34,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Toolbar'ı ayarla
+        // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // RecyclerView ayarları
+        // RecyclerView setup
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        recyclerView.setHasFixedSize(true); // Sabit boyut performans için optimize
+        recyclerView.setHasFixedSize(true);
 
-        executorService = Executors.newSingleThreadExecutor(); // API çağrılarını arka planda çalıştır
+        executorService = Executors.newSingleThreadExecutor(); // Run API calls in background
 
         loadWallpapers("");
     }
 
-    // API çağrısını arka planda çalıştıran fonksiyon
+    // Function to load wallpapers from the API
     private void loadWallpapers(String query) {
         executorService.execute(() -> {
             Random random = new Random();
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                                             dbHelper.removeFromFavorites(wallpaper.getUrl());
 
                                             runOnUiThread(() ->
-                                                    Toast.makeText(MainActivity.this, "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(MainActivity.this, R.string.favorites_removed, Toast.LENGTH_SHORT).show()
                                             );
                                         }).start();
                                     }
@@ -89,13 +89,13 @@ public class MainActivity extends AppCompatActivity {
                             recyclerView.setAdapter(wallpaperAdapter);
                         });
                     } else {
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "API Hatası", Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.api_error, Toast.LENGTH_SHORT).show());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<WallpaperResponse> call, Throwable t) {
-                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Bağlantı Hatası", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.connection_error, Toast.LENGTH_SHORT).show());
                 }
             });
         });
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(this, "Arama butonu bulunamadı!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.search_button_not_found, Toast.LENGTH_SHORT).show();
         }
         return true;
     }
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, FavoritesActivity.class));
                 return true;
             case R.id.action_refresh:
-                Toast.makeText(this, "Yenileniyor...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.refreshing, Toast.LENGTH_SHORT).show();
                 loadWallpapers("");
                 return true;
             default:
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        executorService.shutdown(); // Thread'leri serbest bırak
+        executorService.shutdown(); // Release threads
         super.onDestroy();
     }
 }

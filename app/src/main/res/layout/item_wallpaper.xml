@@ -3,29 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="@dimen/layout_padding">
 
-    <!-- Resim görüntüleme alanı -->
     <ImageView
         android:id="@+id/wallpaperImageView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="@dimen/imageview_height"
         android:scaleType="centerCrop"/>
 
-    <!-- Favoriye ekle/çıkart butonu -->
     <Button
         android:id="@+id/favoriteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Favorilere Ekle"
-        android:layout_marginTop="8dp"/>
+        android:text="@string/add_to_favorites"
+        android:layout_marginTop="@dimen/button_margin_top"/>
 
-    <!-- Favorilerden çıkar butonu (sadece Favoriler sayfasında görünmeli) -->
     <Button
         android:id="@+id/removeFromFavoritesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Favorilerden Çıkar"
+        android:text="@string/remove_from_favorites"
         android:visibility="gone"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="@dimen/button_margin_top"/>
 </LinearLayout>

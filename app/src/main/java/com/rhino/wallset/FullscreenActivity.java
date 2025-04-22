@@ -59,9 +59,9 @@ public class FullscreenActivity extends AppCompatActivity {
         boolean isFavorite = dbHelper.isFavorite(wallpaperUrl);
         runOnUiThread(() -> {
             if (isFavorite) {
-                addToFavoritesButton.setText("Favorilerden Çıkar");
+                addToFavoritesButton.setText(getString(R.string.add_to_favorites));
             } else {
-                addToFavoritesButton.setText("Favorilere Ekle");
+                addToFavoritesButton.setText(getString(R.string.remove_from_favorites));
             }
         });
     }
@@ -74,13 +74,13 @@ public class FullscreenActivity extends AppCompatActivity {
         if (isFavorite) {
             dbHelper.removeFromFavorites(wallpaperUrl);
             runOnUiThread(() -> {
-                Toast.makeText(this, "Duvar kağıdı favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
                 updateFavoriteButton();
             });
         } else {
             dbHelper.addToFavorites(wallpaper); // Wallpaper nesnesi ekleniyor
             runOnUiThread(() -> {
-                Toast.makeText(this, "Duvar kağıdı favorilere eklendi!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.added_to_favorites), Toast.LENGTH_SHORT).show();
                 updateFavoriteButton();
             });
         }

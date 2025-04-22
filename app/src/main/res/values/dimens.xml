@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_padding">12dp</dimen>
+    <dimen name="button_margin_top">10dp</dimen>
+    <dimen name="image_margin">8dp</dimen>
+    <dimen name="image_height">200dp</dimen>
+    <dimen name="default_padding">16dp</dimen>
+    <dimen name="button_margin_end">8dp</dimen>
+    <dimen name="button_margin_start">8dp</dimen>
+    <dimen name="top_margin">20dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="toolbar_padding_start">16dp</dimen>
+    <dimen name="toolbar_padding_end">16dp</dimen>
+    <dimen name="recycler_padding">8dp</dimen>
+    <dimen name="imageview_height">200dp</dimen>
+    <dimen name="layout_padding">16dp</dimen>
+</resources>

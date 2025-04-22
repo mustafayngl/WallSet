@@ -2,50 +2,46 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="@color/black">
 
-    <!-- Fullscreen Image as Background -->
     <ImageView
         android:id="@+id/fullscreenImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <!-- Button Container for horizontal alignment -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/top_margin"
         android:layout_gravity="bottom|center_horizontal"
-        android:padding="16dp">
+        android:padding="@dimen/default_padding">
 
-        <!-- Favoriye Ekle Butonu -->
         <Button
             android:id="@+id/addToFavoritesButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Favoriye Ekle"
+            android:text="@string/add_to_favorites"
             android:textSize="16sp"
-            android:backgroundTint="#FF4081"
-            android:textColor="#FFFFFF"
-            android:padding="12dp"
-            android:layout_marginEnd="8dp" />
+            android:backgroundTint="@color/favorite_button_color"
+            android:textColor="@color/button_text_color"
+            android:padding="@dimen/button_padding"
+            android:layout_marginEnd="@dimen/button_margin_end" />
 
-        <!-- Duvar Kağıdı Yap Butonu -->
         <Button
             android:id="@+id/btnSetWallpaper"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Duvar Kağıdı Yap"
+            android:text="@string/set_wallpaper"
             android:textSize="16sp"
-            android:backgroundTint="#4CAF50"
-            android:textColor="#FFFFFF"
-            android:padding="12dp"
-            android:layout_marginStart="8dp" />
+            android:backgroundTint="@color/set_wallpaper_button_color"
+            android:textColor="@color/button_text_color"
+            android:padding="@dimen/button_padding"
+            android:layout_marginStart="@dimen/button_margin_start" />
     </LinearLayout>
 
 </FrameLayout>

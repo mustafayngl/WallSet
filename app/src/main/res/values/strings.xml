@@ -2,4 +2,22 @@
     <string name="app_name">WallSet</string>
     <string name="wallpaper">Wallpaper</string>
     <string name="button">Button</string>
+    <string name="add_to_favorites">Favorilere Ekle</string>
+    <string name="remove_from_favorites">Favorilerden Çıkar</string>
+    <string name="set_wallpaper">Duvar Kağıdı Yap</string>
+    <string name="wallpapers_title">Duvar Kağıtları</string>
+    <string name="set_home_screen">Ana ekran için ayarla</string>
+    <string name="set_lock_screen">Kilit ekranı için ayarla</string>
+    <string name="set_both">Her ikisi için de ayarla</string>
+    <string name="favorites_removed">Favorilerden çıkarıldı!</string>
+    <string name="api_error">API Hatası</string>
+    <string name="connection_error">Bağlantı Hatası</string>
+    <string name="search_button_not_found">Arama butonu bulunamadı!</string>
+    <string name="refreshing">Yenileniyor...</string>
+    <string name="all_favorites_removed">Tüm favoriler silindi!</string>
+    <string name="no_favorites">Favori duvar kağıdınız yok!</string>
+    <string name="removed_from_favorites">Duvar kağıdı favorilerden çıkarıldı!</string>
+    <string name="added_to_favorites">Duvar kağıdı favorilere eklendi!</string>
+    <string name="wallpaper_set_success">Duvar kağıdı ayarlandı!</string>
+    <string name="wallpaper_set_error">Hata: Duvar kağıdı ayarlanamadı!</string>
 </resources>

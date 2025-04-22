@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="button_primary_color">#FF4081</color>
+    <color name="button_secondary_color">#4CAF50</color>
+    <color name="button_text_color">#FFFFFF</color>
+    <color name="toolbar_background">?attr/colorPrimary</color>
+    <color name="favorite_button_color">#FF4081</color>
+    <color name="set_wallpaper_button_color">#4CAF50</color>
+    <color name="colorPrimary">#3F51B5</color>
 </resources>

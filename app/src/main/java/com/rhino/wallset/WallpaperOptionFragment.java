@@ -63,20 +63,20 @@ public class WallpaperOptionFragment extends BottomSheetDialogFragment {
         Wallpaper wallpaper = new Wallpaper(0, "", "", wallpaperUrl, new Wallpaper.Src());
 
         if (dbHelper.isFavorite(wallpaperUrl)) {
-            btnFavorite.setText("Favorilerden Çıkar");
+            btnFavorite.setText(getString(R.string.remove_from_favorites));
         } else {
-            btnFavorite.setText("Favorilere Ekle");
+            btnFavorite.setText(getString(R.string.add_to_favorites));
         }
 
         btnFavorite.setOnClickListener(v -> {
             if (dbHelper.isFavorite(wallpaperUrl)) {
                 dbHelper.removeFromFavorites(wallpaperUrl);
-                btnFavorite.setText("Favorilere Ekle");
-                Toast.makeText(getContext(), "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show();
+                btnFavorite.setText(getString(R.string.add_to_favorites));
+                Toast.makeText(getContext(), getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
             } else {
                 dbHelper.addToFavorites(wallpaper);  // Wallpaper nesnesini ekliyoruz
-                btnFavorite.setText("Favorilerden Çıkar");
-                Toast.makeText(getContext(), "Favorilere eklendi!", Toast.LENGTH_SHORT).show();
+                btnFavorite.setText(getString(R.string.remove_from_favorites));
+                Toast.makeText(getContext(), getString(R.string.added_to_favorites), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -107,9 +107,9 @@ public class WallpaperOptionFragment extends BottomSheetDialogFragment {
                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
                         try {
                             wallpaperManager.setBitmap(resource, null, false, flag);
-                            Toast.makeText(getContext(), "Duvar kağıdı ayarlandı!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), getString(R.string.wallpaper_set_success), Toast.LENGTH_SHORT).show();
                         } catch (IOException e) {
-                            Toast.makeText(getContext(), "Hata: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), getString(R.string.wallpaper_set_error, e.getMessage()), Toast.LENGTH_SHORT).show();
                         }
                     }
 

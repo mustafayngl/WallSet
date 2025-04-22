@@ -77,13 +77,15 @@ public class MainActivity extends AppCompatActivity {
                                     },
                                     wallpaper -> {
                                         new Thread(() -> {
-                                            SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(MainActivity.this);
-                                            sharedPreferencesHelper.removeFromFavorites(wallpaper.getUrl());
+                                            DatabaseHelper dbHelper = new DatabaseHelper(MainActivity.this);
+                                            dbHelper.removeFromFavorites(wallpaper.getUrl());
 
-                                            runOnUiThread(() -> Toast.makeText(MainActivity.this, "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show());
+                                            runOnUiThread(() ->
+                                                    Toast.makeText(MainActivity.this, "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show()
+                                            );
                                         }).start();
-                                    });
-
+                                    }
+                            );
                             recyclerView.setAdapter(wallpaperAdapter);
                         });
                     } else {

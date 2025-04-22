@@ -7,17 +7,21 @@ public class Wallpaper {
     private String url;
     private Src src;
 
-    // Yapıcı, url parametresi alır
-    public Wallpaper(String url) {
+    // Yapıcı: id, photographer, photographer_url, url ve src alır
+    public Wallpaper(int id, String photographer, String photographer_url, String url, Src src) {
+        this.id = id;
+        this.photographer = photographer;
+        this.photographer_url = photographer_url;
         this.url = url;
+        this.src = src;
     }
 
     // src nesnesinden orijinal URL'yi döndüren metot
     public String getUrl() {
-        // src nesnesi null ise url değerini döndür
-        return src != null ? src.getOriginal() : url;  // Eğer src null ise, direkt url'yi döndür
+        return src != null ? src.getOriginal() : url; // Eğer src null ise, direkt url'yi döndür
     }
 
+    // Getter metotları
     public int getId() {
         return id;
     }
@@ -41,6 +45,7 @@ public class Wallpaper {
         private String medium;
         private String small;
 
+        // Getter metotları
         public String getOriginal() {
             return original;
         }
@@ -55,6 +60,23 @@ public class Wallpaper {
 
         public String getSmall() {
             return small;
+        }
+
+        // Setter metotları (isteğe bağlı olarak ekleyebilirsin)
+        public void setOriginal(String original) {
+            this.original = original;
+        }
+
+        public void setLarge(String large) {
+            this.large = large;
+        }
+
+        public void setMedium(String medium) {
+            this.medium = medium;
+        }
+
+        public void setSmall(String small) {
+            this.small = small;
         }
     }
 }

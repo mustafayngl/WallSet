@@ -15,9 +15,9 @@ public class FavoritesActivity extends AppCompatActivity {
 
     private RecyclerView favoritesRecyclerView;
     private WallpaperAdapter adapter;
-    private SharedPreferencesHelper preferencesHelper;
     private List<Wallpaper> wallpaperList;
     private ExecutorService executorService;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +26,10 @@ public class FavoritesActivity extends AppCompatActivity {
 
         favoritesRecyclerView = findViewById(R.id.favoritesRecyclerView);
         favoritesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        favoritesRecyclerView.setHasFixedSize(true); // Performans için ekledik
+        favoritesRecyclerView.setHasFixedSize(true);
 
-        preferencesHelper = new SharedPreferencesHelper(this);
-        executorService = Executors.newSingleThreadExecutor(); // Arka plan işlemleri için
+        dbHelper = new DatabaseHelper(this); // database bağlantısı
+        executorService = Executors.newSingleThreadExecutor(); // arka plan için
 
         loadFavorites();
     }
@@ -37,12 +37,8 @@ public class FavoritesActivity extends AppCompatActivity {
     // Favori duvar kağıtlarını yükleyen fonksiyon
     private void loadFavorites() {
         executorService.execute(() -> {
-            String[] favorites = preferencesHelper.getFavorites();
-            wallpaperList = new ArrayList<>();
-
-            for (String url : favorites) {
-                wallpaperList.add(new Wallpaper(url));
-            }
+            List<Wallpaper> favorites = dbHelper.getFavorites(); // Favori duvar kağıtlarını alıyoruz
+            wallpaperList = new ArrayList<>(favorites);
 
             runOnUiThread(() -> {
                 if (!wallpaperList.isEmpty()) {
@@ -64,7 +60,7 @@ public class FavoritesActivity extends AppCompatActivity {
     // Favoriden kaldırma işlemi
     private void removeFavorite(Wallpaper wallpaper) {
         executorService.execute(() -> {
-            preferencesHelper.removeFromFavorites(wallpaper.getUrl());
+            dbHelper.removeFromFavorites(wallpaper.getUrl()); // URL'yi al ve favorilerden kaldır
             wallpaperList.remove(wallpaper);
 
             runOnUiThread(() -> {
@@ -78,7 +74,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        executorService.shutdown(); // Thread'leri serbest bırak
+        executorService.shutdown();
         super.onDestroy();
     }
 }

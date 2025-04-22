@@ -1,9 +1,5 @@
 package com.rhino.wallset;
 
-import android.app.WallpaperManager;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,19 +11,13 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 public class FullscreenActivity extends AppCompatActivity {
+
     private Button addToFavoritesButton, btnSetWallpaper;
     private String wallpaperUrl;
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
     private ImageView imageView;
+    private DatabaseHelper dbHelper; // SharedPreferences yerine bu!
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,66 +29,63 @@ public class FullscreenActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        // Görseli görüntüle
         imageView = findViewById(R.id.fullscreenImageView);
         wallpaperUrl = getIntent().getStringExtra("IMAGE_URL");
 
         Glide.with(this)
                 .load(wallpaperUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL) // Önceden yüklenmiş resimleri önbellekte tut
-                .thumbnail(0.1f) // Önce düşük çözünürlüklü göster
-                .priority(Priority.HIGH) // Öncelikli yükleme
-                .override(800, 600) // Büyük resimleri sıkıştırarak yükle
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .thumbnail(0.1f)
+                .priority(Priority.HIGH)
+                .override(800, 600)
                 .into(imageView);
 
-        // SharedPreferences nesnesini oluştur
-        sharedPreferences = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        dbHelper = new DatabaseHelper(this); // Veritabanını başlat
 
-        // Butonları bul
         addToFavoritesButton = findViewById(R.id.addToFavoritesButton);
         btnSetWallpaper = findViewById(R.id.btnSetWallpaper);
 
-        // Favori durumu kontrol et ve butonu ona göre ayarla
-        updateFavoriteButton();
+        updateFavoriteButton(); // Başlangıçta buton durumunu ayarla
 
-        // Favori ekleme işlemi
         addToFavoritesButton.setOnClickListener(v -> new Thread(() -> toggleFavorite()).start());
 
-        // Duvar kağıdını ayarlama işlemi
         btnSetWallpaper.setOnClickListener(v -> showSetWallpaperDialog());
     }
 
-    // Favori durumu kontrol et ve butonu güncelle
     private void updateFavoriteButton() {
-        Set<String> favoritesSet = sharedPreferences.getStringSet("favorites", new HashSet<>());
-        if (favoritesSet.contains(wallpaperUrl)) {
-            addToFavoritesButton.setText("Favorilerden Çıkar");
-        } else {
-            addToFavoritesButton.setText("Favorilere Ekle");
-        }
+        // Wallpaper nesnesi oluşturuluyor
+        Wallpaper wallpaper = new Wallpaper(0, "", "", wallpaperUrl, new Wallpaper.Src());
+
+        boolean isFavorite = dbHelper.isFavorite(wallpaperUrl);
+        runOnUiThread(() -> {
+            if (isFavorite) {
+                addToFavoritesButton.setText("Favorilerden Çıkar");
+            } else {
+                addToFavoritesButton.setText("Favorilere Ekle");
+            }
+        });
     }
 
-    // Favoriye ekleme/çıkarma işlemi
     private void toggleFavorite() {
-        Set<String> favoritesSet = sharedPreferences.getStringSet("favorites", new HashSet<>());
-        Set<String> updatedFavorites = new HashSet<>(favoritesSet); // Mutable kopya oluştur
+        // Wallpaper nesnesi oluşturuluyor
+        Wallpaper wallpaper = new Wallpaper(0, "", "", wallpaperUrl, new Wallpaper.Src());
 
-        if (updatedFavorites.contains(wallpaperUrl)) {
-            updatedFavorites.remove(wallpaperUrl); // Favorilerden çıkar
-            runOnUiThread(() -> Toast.makeText(FullscreenActivity.this, "Duvar kağıdı favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show());
+        boolean isFavorite = dbHelper.isFavorite(wallpaperUrl);
+        if (isFavorite) {
+            dbHelper.removeFromFavorites(wallpaperUrl);
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Duvar kağıdı favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show();
+                updateFavoriteButton();
+            });
         } else {
-            updatedFavorites.add(wallpaperUrl); // Favorilere ekle
-            runOnUiThread(() -> Toast.makeText(FullscreenActivity.this, "Duvar kağıdı favorilere eklendi!", Toast.LENGTH_SHORT).show());
+            dbHelper.addToFavorites(wallpaper); // Wallpaper nesnesi ekleniyor
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Duvar kağıdı favorilere eklendi!", Toast.LENGTH_SHORT).show();
+                updateFavoriteButton();
+            });
         }
-
-        editor.putStringSet("favorites", updatedFavorites);
-        editor.apply();
-
-        runOnUiThread(this::updateFavoriteButton); // Butonu güncelle
     }
 
-    // Duvar kağıdını ayarlamak için seçenekleri gösteren BottomSheetDialogFragment
     private void showSetWallpaperDialog() {
         WallpaperOptionFragment fragment = WallpaperOptionFragment.newInstance(wallpaperUrl);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -108,6 +95,6 @@ public class FullscreenActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Glide.with(this).clear(imageView); // Daha güvenli
+        Glide.with(this).clear(imageView);
     }
 }

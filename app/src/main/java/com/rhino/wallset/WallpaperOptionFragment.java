@@ -26,6 +26,7 @@ public class WallpaperOptionFragment extends BottomSheetDialogFragment {
 
     private String wallpaperUrl;
     private ImageView previewImageView;
+    private DatabaseHelper dbHelper;
 
     public static WallpaperOptionFragment newInstance(String wallpaperUrl) {
         WallpaperOptionFragment fragment = new WallpaperOptionFragment();
@@ -38,6 +39,9 @@ public class WallpaperOptionFragment extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wallpaper_options, container, false);
+
+        // DatabaseHelper initialization
+        dbHelper = new DatabaseHelper(getContext());
 
         // Duvar kağıdı URL'sini al
         wallpaperUrl = getArguments().getString("WALLPAPER_URL");
@@ -53,6 +57,28 @@ public class WallpaperOptionFragment extends BottomSheetDialogFragment {
         Button btnHomeScreen = view.findViewById(R.id.btnHomeScreen);
         Button btnLockScreen = view.findViewById(R.id.btnLockScreen);
         Button btnBoth = view.findViewById(R.id.btnBoth);
+        Button btnFavorite = view.findViewById(R.id.btnFavorite);
+
+        // Favori ekleme/çıkartma butonu işlemi
+        Wallpaper wallpaper = new Wallpaper(0, "", "", wallpaperUrl, new Wallpaper.Src());
+
+        if (dbHelper.isFavorite(wallpaperUrl)) {
+            btnFavorite.setText("Favorilerden Çıkar");
+        } else {
+            btnFavorite.setText("Favorilere Ekle");
+        }
+
+        btnFavorite.setOnClickListener(v -> {
+            if (dbHelper.isFavorite(wallpaperUrl)) {
+                dbHelper.removeFromFavorites(wallpaperUrl);
+                btnFavorite.setText("Favorilere Ekle");
+                Toast.makeText(getContext(), "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show();
+            } else {
+                dbHelper.addToFavorites(wallpaper);  // Wallpaper nesnesini ekliyoruz
+                btnFavorite.setText("Favorilerden Çıkar");
+                Toast.makeText(getContext(), "Favorilere eklendi!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Ana ekran için ayarlama
         btnHomeScreen.setOnClickListener(v -> setWallpaper(WallpaperManager.FLAG_SYSTEM));

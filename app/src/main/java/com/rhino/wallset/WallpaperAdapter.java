@@ -20,14 +20,14 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
     private List<Wallpaper> wallpaperList;
     private OnWallpaperClickListener wallpaperListener;
     private OnRemoveClickListener removeListener;
-    private SharedPreferencesHelper sharedPreferencesHelper;
+    private DatabaseHelper dbHelper;
 
     public WallpaperAdapter(Context context, List<Wallpaper> wallpaperList, OnWallpaperClickListener wallpaperListener, OnRemoveClickListener removeListener) {
         this.context = context;
         this.wallpaperList = wallpaperList;
         this.wallpaperListener = wallpaperListener;
         this.removeListener = removeListener;
-        sharedPreferencesHelper = new SharedPreferencesHelper(context); // SharedPreferencesHelper initialization
+        dbHelper = new DatabaseHelper(context); // DatabaseHelper initialization
     }
 
     @NonNull
@@ -47,35 +47,31 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
 
         holder.imageView.setOnClickListener(v -> wallpaperListener.onWallpaperClick(wallpaper));
 
-        // Favorilere ekle/çıkart butonu işlemi
-        boolean isFavorite = sharedPreferencesHelper.isFavorite(wallpaper.getUrl()); // Resim favorilere eklenmiş mi?
+        boolean isFavorite = dbHelper.isFavorite(wallpaper.getUrl()); // Using DatabaseHelper
 
         if (context instanceof MainActivity) {
-            holder.favoriteButton.setVisibility(View.VISIBLE); // "Favoriye Ekle" butonu görünsün
-            holder.removeButton.setVisibility(View.GONE); // "Favorilerden Çıkar" butonu gizlensin
+            holder.favoriteButton.setVisibility(View.VISIBLE); // "Favoriye Ekle" button visible
+            holder.removeButton.setVisibility(View.GONE); // "Favorilerden Çıkar" button hidden
 
-            // Update the button text based on whether the wallpaper is a favorite
             holder.favoriteButton.setText(isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle");
 
             holder.favoriteButton.setOnClickListener(v -> {
                 if (isFavorite) {
-                    // Remove from favorites
-                    sharedPreferencesHelper.removeFromFavorites(wallpaper.getUrl());
+                    dbHelper.removeFromFavorites(wallpaper.getUrl());
                     holder.favoriteButton.setText("Favorilere Ekle"); // Update UI immediately
                     Toast.makeText(context, "Favorilerden çıkarıldı!", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Add to favorites
-                    sharedPreferencesHelper.addToFavorites(wallpaper.getUrl());
+                    dbHelper.addToFavorites(wallpaper); // Adding Wallpaper object directly
                     holder.favoriteButton.setText("Favorilerden Çıkar"); // Update UI immediately
                     Toast.makeText(context, "Favorilere eklendi!", Toast.LENGTH_SHORT).show();
                 }
 
                 // Notify the adapter to update the list
-                notifyItemChanged(position); // This will force the UI to refresh for this particular item
+                notifyItemChanged(position); // Refresh UI for this particular item
             });
         } else if (context instanceof FavoritesActivity) {
-            holder.favoriteButton.setVisibility(View.GONE); // "Favoriye Ekle" butonu gizlensin
-            holder.removeButton.setVisibility(View.VISIBLE); // "Favorilerden Çıkar" butonu görünsün
+            holder.favoriteButton.setVisibility(View.GONE); // "Favoriye Ekle" button hidden
+            holder.removeButton.setVisibility(View.VISIBLE); // "Favorilerden Çıkar" button visible
 
             holder.removeButton.setOnClickListener(v -> {
                 removeListener.onRemoveClick(wallpaper);
@@ -91,8 +87,8 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
 
     public static class WallpaperViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        Button favoriteButton; // Favorilere ekle/çıkart butonu
-        Button removeButton; // Favorilerden çıkar butonu
+        Button favoriteButton; // Favorilere ekle/çıkart button
+        Button removeButton; // Favorilerden çıkar button
 
         public WallpaperViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">WallSet</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="button">Button</string>
+    <string name="add_to_favorites">Add to Favorites</string>
+    <string name="remove_from_favorites">Remove from Favorites</string>
+    <string name="set_wallpaper">Set as Wallpaper</string>
+    <string name="wallpapers_title">Wallpapers</string>
+    <string name="set_home_screen">Set for Home Screen</string>
+    <string name="set_lock_screen">Set for Lock Screen</string>
+    <string name="set_both">Set for Both</string>
+    <string name="favorites_removed">Removed from favorites!</string>
+    <string name="api_error">API Error</string>
+    <string name="connection_error">Connection Error</string>
+    <string name="search_button_not_found">Search button not found!</string>
+    <string name="refreshing">Refreshing…</string>
+    <string name="all_favorites_removed">All favorites have been deleted!</string>
+    <string name="no_favorites">You have no favorite wallpapers!</string>
+    <string name="removed_from_favorites">Wallpaper removed from favorites!</string>
+    <string name="added_to_favorites">Wallpaper added to favorites!</string>
+    <string name="wallpaper_set_success">Wallpaper set successfully!</string>
+    <string name="wallpaper_set_error">Error: Wallpaper could not be set!</string>
+    <string name="favorites_title">Favorites</string>">
+    <string name="refresh_title">Refresh</string>
+    <string name="search_title">Search</string>
+    <string name="dark_mode">Dark Mode</string>
+</resources>

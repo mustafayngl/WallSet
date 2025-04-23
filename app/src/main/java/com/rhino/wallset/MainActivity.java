@@ -22,6 +22,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import android.content.SharedPreferences;
+import android.view.View;
+import android.widget.Switch;
+import androidx.appcompat.app.AppCompatDelegate;
+
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -105,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
+        // Setup search
         MenuItem searchItem = menu.findItem(R.id.searchView);
         if (searchItem != null) {
             SearchView searchView = (SearchView) searchItem.getActionView();
@@ -120,9 +126,8 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 }
             });
-        } else {
-            Toast.makeText(this, R.string.search_button_not_found, Toast.LENGTH_SHORT).show();
         }
+
         return true;
     }
 
@@ -136,10 +141,22 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.refreshing, Toast.LENGTH_SHORT).show();
                 loadWallpapers("");
                 return true;
+            case R.id.action_toggle_theme:
+                SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+                boolean isDarkMode = prefs.getBoolean("dark_mode", false);
+
+                boolean newMode = !isDarkMode;
+                prefs.edit().putBoolean("dark_mode", newMode).apply();
+
+                AppCompatDelegate.setDefaultNightMode(
+                        newMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+                );
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     @Override
     protected void onDestroy() {

@@ -5,22 +5,27 @@
     <item
         android:id="@+id/action_favorites"
         android:icon="@drawable/ic_favorite"
-        android:title="Favorites"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
+        android:title="@string/favorites_title"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh"
-         android:title="Refresh"
-         android:orderInCategory="101"
-        app:showAsAction="ifRoom" />
+        android:orderInCategory="101"
+        android:title="@string/refresh_title"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/searchView"
-        android:title="Search"
+        android:title="@string/search_title"
         android:icon="@android:drawable/ic_menu_search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="ifRoom|collapseActionView"/>
+        app:showAsAction="always|collapseActionView" />
 
-
+    <item
+        android:id="@+id/action_toggle_theme"
+        android:icon="@drawable/dark_mode"
+        android:title="@string/dark_mode"
+        app:showAsAction="always" />
 </menu>

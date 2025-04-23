@@ -14,4 +14,6 @@
     <color name="favorite_button_color">#FF4081</color>
     <color name="set_wallpaper_button_color">#4CAF50</color>
     <color name="colorPrimary">#3F51B5</color>
+    <color name="background">#FFFFFF</color>
+    <color name="on_background">#000000</color>
 </resources>

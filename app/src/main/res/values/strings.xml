@@ -13,11 +13,15 @@
     <string name="api_error">API Hatası</string>
     <string name="connection_error">Bağlantı Hatası</string>
     <string name="search_button_not_found">Arama butonu bulunamadı!</string>
-    <string name="refreshing">Yenileniyor...</string>
+    <string name="refreshing">Yenileniyor…</string>
     <string name="all_favorites_removed">Tüm favoriler silindi!</string>
     <string name="no_favorites">Favori duvar kağıdınız yok!</string>
     <string name="removed_from_favorites">Duvar kağıdı favorilerden çıkarıldı!</string>
     <string name="added_to_favorites">Duvar kağıdı favorilere eklendi!</string>
     <string name="wallpaper_set_success">Duvar kağıdı ayarlandı!</string>
     <string name="wallpaper_set_error">Hata: Duvar kağıdı ayarlanamadı!</string>
+    <string name="favorites_title">Favoriler</string>">
+    <string name="refresh_title">Yenile</string>
+    <string name="search_title">Ara</string>
+    <string name="dark_mode">Gece modu</string>
 </resources>

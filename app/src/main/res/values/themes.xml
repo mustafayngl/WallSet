@@ -20,7 +20,7 @@
         <item name="android:navigationBarColor">?attr/colorPrimary</item>
 
         <!-- Control Dark Theme switch -->
-        <item name="android:forceDarkAllowed" tools:targetApi="q">true</item>
+        <item name="android:forceDarkAllowed" >true</item>
 
         <!-- Optional: Remove action bar elevation for a flat look -->
         <item name="actionBarStyle">@style/WallSet.ActionBar</item>

@@ -16,4 +16,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="background">#FFFFFF</color>
     <color name="on_background">#000000</color>
+    <color name="text_primary">#000000</color> <!-- Primary text color for light mode -->
+    <color name="background_night">#121212</color> <!-- Dark background for night mode -->
+    <color name="on_background_night">#E0E0E0</color> <!-- Light text color for dark mode -->
 </resources>

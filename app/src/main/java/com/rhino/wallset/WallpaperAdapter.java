@@ -1,10 +1,10 @@
 package com.rhino.wallset;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -16,18 +16,21 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.WallpaperViewHolder> {
-    private Context context;
-    private List<Wallpaper> wallpaperList;
-    private OnWallpaperClickListener wallpaperListener;
-    private OnRemoveClickListener removeListener;
-    private DatabaseHelper dbHelper;
 
-    public WallpaperAdapter(Context context, List<Wallpaper> wallpaperList, OnWallpaperClickListener wallpaperListener, OnRemoveClickListener removeListener) {
+    private final Context context;
+    private final List<Wallpaper> wallpaperList;
+    private final OnWallpaperClickListener wallpaperListener;
+    private final OnRemoveClickListener removeListener;
+    private final DatabaseHelper dbHelper;
+
+    public WallpaperAdapter(Context context, List<Wallpaper> wallpaperList,
+                            OnWallpaperClickListener wallpaperListener,
+                            OnRemoveClickListener removeListener) {
         this.context = context;
         this.wallpaperList = wallpaperList;
         this.wallpaperListener = wallpaperListener;
         this.removeListener = removeListener;
-        dbHelper = new DatabaseHelper(context); // DatabaseHelper initialization
+        this.dbHelper = new DatabaseHelper(context);
     }
 
     @NonNull
@@ -40,6 +43,7 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
     @Override
     public void onBindViewHolder(@NonNull WallpaperViewHolder holder, int position) {
         Wallpaper wallpaper = wallpaperList.get(position);
+
         Glide.with(context)
                 .load(wallpaper.getUrl())
                 .placeholder(R.drawable.placeholder)
@@ -47,36 +51,63 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
 
         holder.imageView.setOnClickListener(v -> wallpaperListener.onWallpaperClick(wallpaper));
 
-        boolean isFavorite = dbHelper.isFavorite(wallpaper.getUrl()); // Using DatabaseHelper
+        updateFavoriteIcon(holder, wallpaper);
 
-        if (context instanceof MainActivity) {
-            holder.favoriteButton.setVisibility(View.VISIBLE); // "Favoriye Ekle" button visible
-            holder.removeButton.setVisibility(View.GONE); // "Favorilerden Çıkar" button hidden
+        holder.favoriteIcon.setOnClickListener(v -> {
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) return;
 
-            holder.favoriteButton.setText(isFavorite ? context.getString(R.string.remove_from_favorites) : context.getString(R.string.add_to_favorites));
+            if (context instanceof MainActivity) {
+                boolean isCurrentlyFavorite = dbHelper.isFavorite(wallpaper.getUrl());
 
-            holder.favoriteButton.setOnClickListener(v -> {
-                if (isFavorite) {
+                if (isCurrentlyFavorite) {
                     dbHelper.removeFromFavorites(wallpaper.getUrl());
-                    holder.favoriteButton.setText(context.getString(R.string.add_to_favorites)); // Update UI immediately
-                    Toast.makeText(context, context.getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
+                    runOnUiThreadSafe(() -> {
+                        Toast.makeText(context, R.string.removed_from_favorites, Toast.LENGTH_SHORT).show();
+                        notifyItemChanged(adapterPosition);
+                    });
                 } else {
-                    dbHelper.addToFavorites(wallpaper); // Adding Wallpaper object directly
-                    holder.favoriteButton.setText(context.getString(R.string.remove_from_favorites)); // Update UI immediately
-                    Toast.makeText(context, context.getString(R.string.added_to_favorites), Toast.LENGTH_SHORT).show();
+                    CohereEmbeddingHelper.getEmbedding(wallpaper.getUrl(), new CohereEmbeddingHelper.EmbeddingCallback() {
+                        @Override
+                        public void onSuccess(float[] embedding) {
+                            dbHelper.addToFavoritesWithEmbedding(wallpaper, embedding);
+                            runOnUiThreadSafe(() -> {
+                                Toast.makeText(context, R.string.added_to_favorites, Toast.LENGTH_SHORT).show();
+                                notifyItemChanged(adapterPosition);
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                            runOnUiThreadSafe(() ->
+                                    Toast.makeText(context, "Embedding error: " + error, Toast.LENGTH_SHORT).show()
+                            );
+                        }
+                    });
                 }
 
-                // Notify the adapter to update the list
-                notifyItemChanged(position); // Refresh UI for this particular item
-            });
-        } else if (context instanceof FavoritesActivity) {
-            holder.favoriteButton.setVisibility(View.GONE); // "Favoriye Ekle" button hidden
-            holder.removeButton.setVisibility(View.VISIBLE); // "Favorilerden çıkar" button visible
-
-            holder.removeButton.setOnClickListener(v -> {
+            } else if (context instanceof FavoritesActivity) {
                 removeListener.onRemoveClick(wallpaper);
-                Toast.makeText(context, context.getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
-            });
+                runOnUiThreadSafe(() -> {
+                    Toast.makeText(context, R.string.removed_from_favorites, Toast.LENGTH_SHORT).show();
+                    notifyItemRemoved(adapterPosition);
+                });
+            }
+        });
+    }
+
+    private void updateFavoriteIcon(@NonNull WallpaperViewHolder holder, Wallpaper wallpaper) {
+        boolean isFavorite = dbHelper.isFavorite(wallpaper.getUrl());
+        holder.favoriteIcon.setImageResource(
+                isFavorite ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline
+        );
+    }
+
+    private void runOnUiThreadSafe(Runnable action) {
+        if (context instanceof Activity) {
+            ((Activity) context).runOnUiThread(action);
+        } else {
+            action.run(); // fallback
         }
     }
 
@@ -87,14 +118,12 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
 
     public static class WallpaperViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        Button favoriteButton; // Favorilere ekle/çıkart button
-        Button removeButton; // Favorilerden çıkar button
+        ImageView favoriteIcon;
 
         public WallpaperViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.wallpaperImageView);
-            favoriteButton = itemView.findViewById(R.id.favoriteButton);
-            removeButton = itemView.findViewById(R.id.removeFromFavoritesButton);
+            favoriteIcon = itemView.findViewById(R.id.favoriteHeartIcon);
         }
     }
 

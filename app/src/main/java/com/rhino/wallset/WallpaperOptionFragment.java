@@ -40,53 +40,62 @@ public class WallpaperOptionFragment extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wallpaper_options, container, false);
 
-        // DatabaseHelper initialization
-        dbHelper = new DatabaseHelper(getContext());
+        dbHelper = new DatabaseHelper(requireContext());
 
-        // Duvar kağıdı URL'sini al
-        wallpaperUrl = getArguments().getString("WALLPAPER_URL");
+        if (getArguments() != null) {
+            wallpaperUrl = getArguments().getString("WALLPAPER_URL");
+        } else {
+            Toast.makeText(requireContext(), "Wallpaper URL not found", Toast.LENGTH_SHORT).show();
+            dismiss();
+            return view;
+        }
 
-        // Preview görseli
         previewImageView = view.findViewById(R.id.previewImageView);
-        Glide.with(getContext())
+        Glide.with(requireContext())
                 .load(wallpaperUrl)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(previewImageView);
 
-        // Seçenekler için butonlar
         Button btnHomeScreen = view.findViewById(R.id.btnHomeScreen);
         Button btnLockScreen = view.findViewById(R.id.btnLockScreen);
         Button btnBoth = view.findViewById(R.id.btnBoth);
         Button btnFavorite = view.findViewById(R.id.btnFavorite);
 
-        // Favori ekleme/çıkartma butonu işlemi
         Wallpaper wallpaper = new Wallpaper(0, "", "", wallpaperUrl, new Wallpaper.Src());
 
-        if (dbHelper.isFavorite(wallpaperUrl)) {
-            btnFavorite.setText(getString(R.string.remove_from_favorites));
-        } else {
-            btnFavorite.setText(getString(R.string.add_to_favorites));
-        }
+        boolean isFav = dbHelper.isFavorite(wallpaperUrl);
+        btnFavorite.setText(getString(isFav ? R.string.remove_from_favorites : R.string.add_to_favorites));
 
         btnFavorite.setOnClickListener(v -> {
             if (dbHelper.isFavorite(wallpaperUrl)) {
                 dbHelper.removeFromFavorites(wallpaperUrl);
-                btnFavorite.setText(getString(R.string.add_to_favorites));
-                Toast.makeText(getContext(), getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
+                requireActivity().runOnUiThread(() -> {
+                    btnFavorite.setText(getString(R.string.add_to_favorites));
+                    Toast.makeText(requireContext(), getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
+                });
             } else {
-                dbHelper.addToFavorites(wallpaper);  // Wallpaper nesnesini ekliyoruz
-                btnFavorite.setText(getString(R.string.remove_from_favorites));
-                Toast.makeText(getContext(), getString(R.string.added_to_favorites), Toast.LENGTH_SHORT).show();
+                CohereEmbeddingHelper.getEmbedding(wallpaperUrl, new CohereEmbeddingHelper.EmbeddingCallback() {
+                    @Override
+                    public void onSuccess(float[] embedding) {
+                        dbHelper.addToFavoritesWithEmbedding(wallpaper, embedding);
+                        requireActivity().runOnUiThread(() -> {
+                            btnFavorite.setText(getString(R.string.remove_from_favorites));
+                            Toast.makeText(requireContext(), getString(R.string.added_to_favorites), Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(requireContext(), "AI embedding failed: " + error, Toast.LENGTH_SHORT).show()
+                        );
+                    }
+                });
             }
         });
 
-        // Ana ekran için ayarlama
         btnHomeScreen.setOnClickListener(v -> setWallpaper(WallpaperManager.FLAG_SYSTEM));
-
-        // Kilit ekranı için ayarlama
         btnLockScreen.setOnClickListener(v -> setWallpaper(WallpaperManager.FLAG_LOCK));
-
-        // Her ikisi için de ayarlama
         btnBoth.setOnClickListener(v -> {
             setWallpaper(WallpaperManager.FLAG_SYSTEM);
             setWallpaper(WallpaperManager.FLAG_LOCK);
@@ -96,26 +105,25 @@ public class WallpaperOptionFragment extends BottomSheetDialogFragment {
     }
 
     private void setWallpaper(int flag) {
-        WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(requireContext());
 
-        Glide.with(getContext())
+        Glide.with(requireContext())
                 .asBitmap()
                 .load(wallpaperUrl)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
-                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         try {
                             wallpaperManager.setBitmap(resource, null, false, flag);
-                            Toast.makeText(getContext(), getString(R.string.wallpaper_set_success), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), getString(R.string.wallpaper_set_success), Toast.LENGTH_SHORT).show();
                         } catch (IOException e) {
-                            Toast.makeText(getContext(), getString(R.string.wallpaper_set_error, e.getMessage()), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), getString(R.string.wallpaper_set_error), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                    }
+                    public void onLoadCleared(@Nullable Drawable placeholder) {}
                 });
     }
 }

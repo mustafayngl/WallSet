@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:colorBackground"
     tools:context=".MainActivity">
 
+    <!-- Arka plan görsel veya siyah renk -->
+    <ImageView
+        android:id="@+id/backgroundOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_overlay"
+        android:alpha="0.1"
+        android:visibility="gone" />
+
+    <!-- Modern Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:background="@color/toolbar_background"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#AA000000"
         android:title="@string/wallpapers_title"
-        android:titleTextColor="@color/white"
-        android:elevation="4dp"
-        android:paddingStart="@dimen/toolbar_padding_start"
-        android:paddingEnd="@dimen/toolbar_padding_end"
-        android:layout_alignParentTop="true" />
+        android:titleTextColor="@android:color/white"
+        android:elevation="6dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+    <!-- Duvar Kağıtları Listesi -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/recycler_padding"
-        android:layout_below="@id/toolbar"/>
-</RelativeLayout>
+        android:layout_marginTop="?attr/actionBarSize"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/item_wallpaper" />
+
+</FrameLayout>

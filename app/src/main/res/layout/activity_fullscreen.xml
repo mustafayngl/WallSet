@@ -1,47 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="?android:colorBackground">
 
+    <!-- Fullscreen wallpaper -->
     <ImageView
         android:id="@+id/fullscreenImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
+    <!-- Action buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="@dimen/top_margin"
+        android:padding="16dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:padding="@dimen/default_padding">
+        android:layout_marginBottom="32dp"
+        android:background="@android:color/transparent">
 
-        <Button
-            android:id="@+id/addToFavoritesButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/add_to_favorites"
-            android:textSize="16sp"
-            android:backgroundTint="@color/favorite_button_color"
-            android:textColor="@color/button_text_color"
-            android:padding="@dimen/button_padding"
-            android:layout_marginEnd="@dimen/button_margin_end" />
+        <!-- Heart-shaped Favorite Button -->
+        <ImageButton
+            android:id="@+id/btnFavorite"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_heart_outline"
+            android:contentDescription="@string/add_to_favorites"
+            android:layout_marginEnd="24dp"
+            app:tint="@color/favorite_button_color" />
 
+        <!-- Set Wallpaper Button (rounded icon) -->
         <Button
             android:id="@+id/btnSetWallpaper"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/set_wallpaper"
-            android:textSize="16sp"
+            android:text="🖼 Set Wallpaper"
+            android:textSize="14sp"
+            android:textColor="@color/white"
             android:backgroundTint="@color/set_wallpaper_button_color"
-            android:textColor="@color/button_text_color"
-            android:padding="@dimen/button_padding"
-            android:layout_marginStart="@dimen/button_margin_start" />
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@drawable/rounded_button" />
     </LinearLayout>
-
 </FrameLayout>

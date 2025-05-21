@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/layout_padding">
+    android:layout_height="200dp"
+    android:layout_margin="8dp"
+    android:background="@android:color/darker_gray"
+    android:clipToOutline="true">
 
     <ImageView
         android:id="@+id/wallpaperImageView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/imageview_height"
-        android:scaleType="centerCrop"/>
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
 
-    <Button
-        android:id="@+id/favoriteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_to_favorites"
-        android:layout_marginTop="@dimen/button_margin_top"/>
+    <ImageView
+        android:id="@+id/favoriteHeartIcon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="12dp"
+        android:padding="4dp"
+        android:background="@drawable/favorite_icon_bg"
+        android:src="@drawable/ic_heart_outline"
+        android:contentDescription="@string/add_to_favorites"
+        app:tint="@android:color/white" />
 
-    <Button
-        android:id="@+id/removeFromFavoritesButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/remove_from_favorites"
-        android:visibility="gone"
-        android:layout_marginTop="@dimen/button_margin_top"/>
-</LinearLayout>
+</FrameLayout>

@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/favoritesRootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/default_padding"
+    android:fitsSystemWindows="true"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     android:background="?android:colorBackground">
 
+    <!-- Search bar at the top -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/semanticSearchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:queryHint="Search favorites with AI"
+        android:background="?android:attr/editTextBackground"
+        android:elevation="4dp"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Favorites list below -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favoritesRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="12dp" />
 </LinearLayout>

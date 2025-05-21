@@ -12,7 +12,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "wallpaper_favorites.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String TABLE_NAME = "favorites";
     private static final String COLUMN_ID = "id";
@@ -23,6 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_SRC_LARGE = "src_large";
     private static final String COLUMN_SRC_MEDIUM = "src_medium";
     private static final String COLUMN_SRC_SMALL = "src_small";
+    private static final String COLUMN_EMBEDDING = "embedding";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_FAVORITES_TABLE = "CREATE TABLE " + TABLE_NAME + "("
+        String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_PHOTOGRAPHER + " TEXT,"
                 + COLUMN_PHOTOGRAPHER_URL + " TEXT,"
@@ -38,9 +39,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_SRC_ORIGINAL + " TEXT,"
                 + COLUMN_SRC_LARGE + " TEXT,"
                 + COLUMN_SRC_MEDIUM + " TEXT,"
-                + COLUMN_SRC_SMALL + " TEXT"
+                + COLUMN_SRC_SMALL + " TEXT,"
+                + COLUMN_EMBEDDING + " TEXT"
                 + ")";
-        db.execSQL(CREATE_FAVORITES_TABLE);
+        db.execSQL(CREATE_TABLE);
     }
 
     @Override
@@ -49,8 +51,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Favoriye ekle
     public boolean addToFavorites(Wallpaper wallpaper) {
+        return addToFavoritesWithEmbedding(wallpaper, null);
+    }
+
+    public boolean addToFavoritesWithEmbedding(Wallpaper wallpaper, float[] embedding) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_PHOTOGRAPHER, wallpaper.getPhotographer());
@@ -60,36 +65,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_SRC_LARGE, wallpaper.getSrc().getLarge());
         values.put(COLUMN_SRC_MEDIUM, wallpaper.getSrc().getMedium());
         values.put(COLUMN_SRC_SMALL, wallpaper.getSrc().getSmall());
-
+        values.put(COLUMN_EMBEDDING, serializeEmbedding(embedding));
         long result = db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
         db.close();
         return result != -1;
     }
 
-    // Favoriden çıkar
     public boolean removeFromFavorites(String imageUrl) {
         SQLiteDatabase db = this.getWritableDatabase();
-        int deletedRows = db.delete(TABLE_NAME, COLUMN_URL + "=?", new String[]{imageUrl});
+        int deleted = db.delete(TABLE_NAME, COLUMN_URL + "=?", new String[]{imageUrl});
         db.close();
-        return deletedRows > 0;
+        return deleted > 0;
     }
 
-    // Favori kontrolü
     public boolean isFavorite(String imageUrl) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, new String[]{COLUMN_ID},
-                COLUMN_URL + "=?", new String[]{imageUrl},
-                null, null, null);
-
-        boolean exists = (cursor.getCount() > 0);
+        Cursor cursor = db.query(TABLE_NAME, new String[]{COLUMN_ID}, COLUMN_URL + "=?",
+                new String[]{imageUrl}, null, null, null);
+        boolean exists = cursor.moveToFirst();
         cursor.close();
         db.close();
         return exists;
     }
 
-    // Favorileri listele
     public List<Wallpaper> getFavorites() {
-        List<Wallpaper> favorites = new ArrayList<>();
+        List<Wallpaper> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_NAME,
@@ -99,14 +99,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                // Src nesnesini oluşturuyoruz
-                Wallpaper.Src src = new Wallpaper.Src(); // Wallpaper.Src olarak erişilmeli
+                Wallpaper.Src src = new Wallpaper.Src();
                 src.setOriginal(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SRC_ORIGINAL)));
                 src.setLarge(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SRC_LARGE)));
                 src.setMedium(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SRC_MEDIUM)));
                 src.setSmall(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SRC_SMALL)));
 
-                // Wallpaper nesnesi oluşturuluyor
                 Wallpaper wallpaper = new Wallpaper(
                         cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHOTOGRAPHER)),
@@ -114,13 +112,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_URL)),
                         src
                 );
-
-                favorites.add(wallpaper);
+                list.add(wallpaper);
             } while (cursor.moveToNext());
         }
 
         cursor.close();
         db.close();
-        return favorites;
+        return list;
+    }
+
+    public float[] getEmbedding(String imageUrl) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, new String[]{COLUMN_EMBEDDING}, COLUMN_URL + "=?",
+                new String[]{imageUrl}, null, null, null);
+        float[] result = null;
+        if (cursor.moveToFirst()) {
+            String embeddingStr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMBEDDING));
+            result = deserializeEmbedding(embeddingStr);
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
+
+    public float[] getEmbeddingForWallpaper(String imageUrl) {
+        return getEmbedding(imageUrl);
+    }
+
+    private String serializeEmbedding(float[] embedding) {
+        if (embedding == null || embedding.length == 0) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < embedding.length; i++) {
+            sb.append(embedding[i]);
+            if (i < embedding.length - 1) sb.append(",");
+        }
+        return sb.toString();
+    }
+
+    private float[] deserializeEmbedding(String str) {
+        if (str == null || str.isEmpty()) return new float[0];
+        String[] parts = str.split(",");
+        float[] embedding = new float[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            try {
+                embedding[i] = Float.parseFloat(parts[i]);
+            } catch (NumberFormatException e) {
+                embedding[i] = 0f;
+            }
+        }
+        return embedding;
     }
 }

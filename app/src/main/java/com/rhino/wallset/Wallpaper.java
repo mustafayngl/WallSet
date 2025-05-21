@@ -6,6 +6,7 @@ public class Wallpaper {
     private String photographer_url;
     private String url;
     private Src src;
+    private float[] embedding;
 
     // Yapıcı: id, photographer, photographer_url, url ve src alır
     public Wallpaper(int id, String photographer, String photographer_url, String url, Src src) {
@@ -36,6 +37,14 @@ public class Wallpaper {
 
     public Src getSrc() {
         return src;
+    }
+
+    public void setEmbedding(float[] embedding) {
+        this.embedding = embedding;
+    }
+
+    public float[] getEmbedding() {
+        return embedding;
     }
 
     // Src sınıfı

@@ -13,7 +13,12 @@ android {
         versionCode 1
         versionName "1.0"
 
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "COHERE_API_KEY", "\"${COHERE_API_KEY}\""
+    }
+    buildFeatures {
+        buildConfig true
     }
 
     buildTypes {
@@ -41,6 +46,12 @@ dependencies {
     implementation libs.retrofit
     implementation libs.converter.gson
     implementation libs.fragment // Versiyonu güncelleyebilirsiniz.
+
+    // OkHttp for making HTTP calls
+    implementation libs.okhttp
+    // (Optional) OkHttp logging interceptor for debugging
+    implementation libs.logging.interceptor
+
 
     // Glide for image loading
     implementation libs.glide

@@ -10,6 +10,8 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SearchView;
@@ -33,6 +35,15 @@ public class MainActivity extends AppCompatActivity {
     private WallpaperAdapter wallpaperAdapter;
     private List<Wallpaper> wallpapers;
     private ExecutorService executorService;
+
+    // 🔁 Yeni: Favorilerden dönüş için launcher
+    private final ActivityResultLauncher<Intent> favoritesLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK) {
+                            loadWallpapers("");
+                        }
+                    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +165,8 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_favorites) {
-            startActivity(new Intent(this, FavoritesActivity.class));
+            Intent intent = new Intent(this, FavoritesActivity.class);
+            favoritesLauncher.launch(intent); // 🔁 Launcher ile başlat
             return true;
         } else if (id == R.id.action_refresh) {
             loadWallpapers("");

@@ -87,22 +87,26 @@ public class FavoritesActivity extends AppCompatActivity {
             @Override
             public void onSuccess(float[] queryEmbedding) {
                 executorService.execute(() -> {
-                    List<ScoredWallpaper> scoredList = new ArrayList<>();
+                    List<Wallpaper> relevantResults = new ArrayList<>();
                     for (Wallpaper wp : allFavorites) {
                         float[] titleEmbedding = dbHelper.getEmbeddingForWallpaper(wp.getUrl());
                         if (titleEmbedding != null) {
                             float similarity = computeCosineSimilarity(queryEmbedding, titleEmbedding);
-                            scoredList.add(new ScoredWallpaper(wp, similarity));
+                            if (similarity >= 0.30f) { // 🔎 sadece yeterince benzer olanlar eklenecek
+                                relevantResults.add(wp);
+                            }
                         }
                     }
 
-                    Collections.sort(scoredList, Comparator.comparingDouble(w -> -w.similarity));
                     wallpaperList.clear();
-                    for (ScoredWallpaper sw : scoredList) {
-                        wallpaperList.add(sw.wallpaper);
-                    }
+                    wallpaperList.addAll(relevantResults);
 
-                    runOnUiThread(() -> adapter.notifyDataSetChanged());
+                    runOnUiThread(() -> {
+                        if (wallpaperList.isEmpty()) {
+                            Toast.makeText(FavoritesActivity.this, "No matching results found.", Toast.LENGTH_SHORT).show();
+                        }
+                        adapter.notifyDataSetChanged();
+                    });
                 });
             }
 
@@ -114,6 +118,7 @@ public class FavoritesActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private float computeCosineSimilarity(float[] a, float[] b) {
         float dot = 0f;
@@ -157,6 +162,9 @@ public class FavoritesActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 adapter.notifyDataSetChanged();
+
+                setResult(RESULT_OK);
+
                 if (wallpaperList.isEmpty()) {
                     Toast.makeText(FavoritesActivity.this, getString(R.string.all_favorites_removed), Toast.LENGTH_SHORT).show();
                 }

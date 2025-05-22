@@ -21,8 +21,7 @@
         android:layout_margin="12dp"
         android:padding="4dp"
         android:background="@drawable/favorite_icon_bg"
-        android:src="@drawable/ic_heart_outline"
-        android:contentDescription="@string/add_to_favorites"
-        app:tint="@android:color/white" />
+        android:src="@drawable/ic_heart_filled"
+        android:contentDescription="@string/add_to_favorites" />
 
 </FrameLayout>

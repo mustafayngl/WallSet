@@ -92,7 +92,7 @@ public class FavoritesActivity extends AppCompatActivity {
                         float[] titleEmbedding = dbHelper.getEmbeddingForWallpaper(wp.getUrl());
                         if (titleEmbedding != null) {
                             float similarity = computeCosineSimilarity(queryEmbedding, titleEmbedding);
-                            if (similarity >= 0.30f) { // 🔎 sadece yeterince benzer olanlar eklenecek
+                            if (similarity >= 0.35f) { // 🔎 sadece yeterince benzer olanlar eklenecek
                                 relevantResults.add(wp);
                             }
                         }
